@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 import openai
 import os
 
-app = FastAPI()
+app = FastAPI(debug=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
