@@ -1,47 +1,39 @@
 $(document).ready(function () {
-  const chatForm = document.getElementById('chat-form');
-  const chatMessages = document.getElementById('chat-messages');
-  const userInput = document.getElementById('user-input');
+  const chatForm = $('#chat-form');
+  const chatMessages = $('#chat-messages');
+  const userInput = $('#user-input');
 
-  chatForm.addEventListener('submit', function (event) {
+  chatForm.on('submit', function (event) {
     event.preventDefault();
 
-    const userMessage = userInput.value.trim();
+    const userMessage = userInput.val().trim();
     if (userMessage === '') return;
 
-    const messageContainer = document.createElement('div');
-    messageContainer.classList.add('message');
-    messageContainer.classList.add('user-message');
-    const messageText = document.createElement('p');
-    messageText.textContent = userMessage;
-    messageContainer.appendChild(messageText);
-    chatMessages.appendChild(messageContainer);
+    const messageContainer = $('<div class="message user-message"></div>');
+    const messageText = $('<p></p>').text(userMessage);
+    messageContainer.append(messageText);
+    chatMessages.append(messageContainer);
 
-    userInput.value = '';
+    userInput.val('');
 
-    fetch('/chatbot', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt: userMessage }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
+    $.ajax({
+      url: '/chatbot',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ prompt: userMessage }),
+      success: function (data) {
         const botMessage = data.response;
 
-        const messageContainer = document.createElement('div');
-        messageContainer.classList.add('message');
-        messageContainer.classList.add('bot-message');
-        const messageText = document.createElement('p');
-        messageText.textContent = botMessage;
-        messageContainer.appendChild(messageText);
-        chatMessages.appendChild(messageContainer);
+        const messageContainer = $('<div class="message bot-message"></div>');
+        const messageText = $('<p></p>').text(botMessage);
+        messageContainer.append(messageText);
+        chatMessages.append(messageContainer);
 
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      })
-      .catch((error) => {
+        chatMessages.scrollTop(chatMessages.prop('scrollHeight'));
+      },
+      error: function (error) {
         console.error('Error:', error);
-      });
+      },
+    });
   });
 });
