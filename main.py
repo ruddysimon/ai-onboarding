@@ -22,7 +22,7 @@ async def chatbot(request: Request):
     data = await request.json()
     user_message = data.get("prompt")
 
-    prompt = """Answer the question as truthfully as possible using the provided text, and if the answer is not contained within the text below, say 'I don't know'
+    prompt = """
 
 Act as a behavioral plan designer, expert in Tiny Habits, and self-determination 
 theory, tasked with formulating a detailed, step-by-step plan aimed at achieving a specific goal over a set timeframe based on context and input from the user, whom we will call the Plan Creator. 
