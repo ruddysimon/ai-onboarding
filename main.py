@@ -6,6 +6,8 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import uvicorn
 import openai
+import os
+from os.path import join, normpath
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -23,7 +25,7 @@ async def chat_view(request: Request):
 
 @app.post("/chatbot")
 async def chatbot(request: ChatRequest):
-    OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'  # Replace with your actual API key
+    OPENAI_API_KEY = os.environ.get("SENDGRID_PASSWORD")   # Replace with your actual API key
     COMPLETIONS_MODEL = "text-davinci-003"
     EMBEDDING_MODEL = "text-embedding-ada-002"
 
