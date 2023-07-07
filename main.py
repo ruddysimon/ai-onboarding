@@ -53,7 +53,7 @@ We believe people and businesses have shared goals.
 We believe there is a space to connect with others meaningfully that sits between therapy and family and friends.
 
 """
-    prompt += request.prompt
+    prompt += user_message
 
     try:
         response = openai.Completion.create(
