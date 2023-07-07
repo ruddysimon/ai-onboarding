@@ -1,33 +1,26 @@
-import requests
+import os
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
-import uvicorn
+from fastapi.responses import HTMLResponse, JSONResponse
 import openai
 import os
-from os.path import join, normpath
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-
-class ChatRequest(BaseModel):
-    prompt: str
-
+# Set up OpenAI API
+openai.api_key = os.environ.get("CHATGPT") 
 
 @app.get("/", response_class=HTMLResponse)
 async def chat_view(request: Request):
     return templates.TemplateResponse("chat.html", {"request": request})
 
-
 @app.post("/chatbot")
-async def chatbot(request: ChatRequest):
-    OPENAI_API_KEY = os.environ.get("SENDGRID_PASSWORD")   # Replace with your actual API key
-    COMPLETIONS_MODEL = "text-davinci-003"
-    EMBEDDING_MODEL = "text-embedding-ada-002"
+async def chatbot(request: Request):
+    data = await request.json()
+    user_message = data.get("prompt")
 
     prompt = """Answer the question as truthfully as possible using the provided text, and if the answer is not contained within the text below, say 'I don't know'
 
@@ -61,7 +54,7 @@ We believe there is a space to connect with others meaningfully that sits betwee
 
 """
     prompt += request.prompt
-    print(prompt)
+
     try:
         response = openai.Completion.create(
             prompt=prompt,
@@ -69,25 +62,15 @@ We believe there is a space to connect with others meaningfully that sits betwee
             n=1,
             stop=None,
             temperature=0,
-            model=COMPLETIONS_MODEL
+            model="text-davinci-003"
         )
-        print(response.choices[0].text)
+        chat_response = response.choices[0].text.strip()
+        return JSONResponse({"response": chat_response})
+
     except openai.error.APIError as e:
-        # Handle API error here, e.g. retry or log
         print(f"OpenAI API returned an API Error: {e}")
-        return {"response": "Sorry... The Buildly Support Bot is not feeling well, please try again later."}
+        return JSONResponse({"response": "Sorry... The AI chatbot is not available at the moment."})
 
-    except openai.error.APIConnectionError as e:
-        # Handle connection error here
-        print(f"Failed to connect to OpenAI API: {e}")
-        return {"response": "Sorry... The Buildly Support Bot is not feeling well, please try again later."}
-
-    except openai.error.RateLimitError as e:
-        # Handle rate limit error (we recommend using exponential backoff)
-        print(f"OpenAI API request exceeded rate limit: {e}")
-        return {"response": "Sorry... The Buildly Support Bot is not feeling well, please try again later."}
-
-    return {"response": response.choices[0].text}
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    except Exception as e:
+        print(f"An error occurred during chatbot processing: {e}")
+        return JSONResponse({"response": "Sorry... An error occurred during chat processing."})
