@@ -82,7 +82,7 @@ Reminder: Ask the plan creator questions one at a time and wait for a response b
     try:
         response = openai.Completion.create(
             prompt=prompt,
-            max_tokens=100,
+            max_tokens=300,
             n=1,
             stop=None,
             temperature=0,
