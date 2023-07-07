@@ -1,5 +1,24 @@
 # ai-onboarding
 
+# Installation
+
+## To start the FastAPI app on your local machine, follow these steps:
+
+- Make sure you have Python installed on your machine. You can download and install Python from the official website: https://www.python.org/downloads/
+
+- Create a new directory for your project and navigate to that directory using the command line.
+
+- Create a new Python virtual environment. You can create a virtual environment by running the following command in the command line:
+
+```
+docker build -t ai-buddy .
+```
+Activate the docker environment. and then run the fastapi app
+
+```docker run -p 8000:8000 ai-buddy```
+
+
+
 # Product Vision Statement:
 Our open-source project aims to create an accessible and robust ChatGPT on-boarding agent for a flexible software development platform. By seamlessly integrating natural language processing, machine learning, and goal tracking, our product empowers users to effortlessly set and achieve their objectives while facilitating collaboration and productivity. We envision a user-friendly and adaptable solution that fosters a seamless onboarding experience, enabling individuals and teams to leverage the power of AI in a transparent and customizable manner.
 
